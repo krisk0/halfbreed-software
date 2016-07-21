@@ -1,0 +1,11 @@
+#!/bin/sh
+
+export CFLAGS='-m32 -O3 -march=pentium4 -msse2 -msse4.1 -msse4.2 -maes'
+export CXXFLAGS="$CFLAGS"
+export CHOST=i386-pc-linux-gnu
+export CC=/usr/x86_64-linux-android/bin/x86_64-linux-android-gcc
+export CXX=/usr/x86_64-linux-android/bin/x86_64-linux-android-g++
+
+RUN_COMMAND=ls \
+ fat-gentoo-friendly_executable \
+ /usr/portage/app-arch/p7zip/p7zip-9.38.1-r3.ebuild android

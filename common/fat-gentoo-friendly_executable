@@ -1,0 +1,109 @@
+#!/bin/sh
+
+# Install this script into /bin or /usr/local/bin
+
+die()
+ {
+  echo "$@"
+  exit 1
+ }
+
+[ -z "$CC" ] && die 'CC unset'
+[ -z "$1" ] && die 'need ebuild as 1st parameter'
+[ -z "$2" ] && die 'need REALM as 2nd paramater'
+REALM=$2
+
+# maybe switch profile
+unset saved_profile
+cpu=${CHOST%%-*}
+( [ .$cpu == .i386 ] || [ .$cpu == .i686 ] ) && 
+ {
+  saved_profile=`realpath /etc/portage/make.profile`
+  [ -z "$saved_profile" ] && die "where is Gentoo profile?"
+  new_profile=${saved_profile/amd64/x86}
+  [ "$new_profile" == "$saved_profile" ] && unset saved_profile
+  [ -z "$saved_profile" ] ||
+   {
+    [ -d "$new_profile" ] || die "x86 profile $new_profile not found"
+    echo "switching profile to $new_profile"
+    # ln -sf does nothing when link already exists, is that a bug?
+    rm -f /etc/portage/make.profile
+    ln -s "$new_profile" /etc/portage/make.profile || 
+     die "failed to switch to new profile"
+   }
+ }
+
+PORTAGE_TMPDIR=/tmp/
+i=`fgrep PORTAGE_TMPDIR /etc/portage/make.conf`
+[ -z "$i" ] || PORTAGE_TMPDIR=${i#*=}
+echo "PORTAGE_TMPDIR appears to be $PORTAGE_TMPDIR"
+PORTAGE_TMPDIR=$PORTAGE_TMPDIR/portage
+
+rm -rf "$PORTAGE_TMPDIR"
+
+unset ebuild_failed
+ebuild --skip-manifest $1 clean install || ebuild_failed=1
+[ -z "$saved_profile" ] || 
+ {
+  rm -f /etc/portage/make.profile
+  ln -s "$saved_profile" /etc/portage/make.profile || 
+   die "failed to return old profile"
+ }
+[ -z "$ebuild_failed" ] || die 'ebuild failed'
+
+cd "$PORTAGE_TMPDIR" || exit
+i=`find . -type d -name image|head -1`
+[ -z $i ] && { echo 'no image/'; exit 1; }
+cd $i || die "failed to chdir to $i"
+(
+ cd usr || die 'no usr/ in image'
+ for x in pkgconfig share lib32; do
+  y=$(find . -type d -name $x 2>/dev/null)
+  [ -z $y ] || { echo removing $y ; rm -r $y; }
+ done
+)
+
+[ -z "$RUN_COMMAND" ] ||
+ {
+  RUN_COMMAND=$(echo $RUN_COMMAND | 
+                sed s:@REALM:$EPREFIX/usr/x86_64-linux-$REALM:g)
+  sh -c "$RUN_COMMAND"
+  exit
+ }
+
+[ -z "$INSTALL_ONLY" ] && 
+ { 
+  cp -r . $EPREFIX/usr/x86_64-linux-$REALM/ || die 'cp failed'
+  exit
+ }
+
+install_directory()
+ {
+  echo "will copy directory $1"
+  d=$EPREFIX/usr/x86_64-linux-$REALM/$(dirname $1)
+  mkdir -p $d || die "install_directory(): mkdir $d failed"
+  cp -r $1 $d || die "install_directory(): cp -r $1 failed"
+ }
+
+install_file()
+ {
+  d=$EPREFIX/usr/x86_64-linux-$REALM/$(dirname $1)
+  mkdir -p $d || die "install_file(): mkdir $d failed"
+  cp $1 $d/ || die "install_file():cp $1 $d/ failed"
+ }
+
+# is that full path?
+[ "${INSTALL_ONLY/\//}" != "$INSTALL_ONLY" ] &&
+ {
+  for x in $(find . -wholename "$INSTALL_ONLY") ; do
+   [ -d $x ] && install_directory $x
+   [ -f $x ] && install_file $x
+  done
+  exit 0
+ }
+
+for x in $(find . -name "$INSTALL_ONLY") ; do
+ [ -d $x ] && install_directory $x
+ [ -f $x ] && install_file $x
+done
+exit 0

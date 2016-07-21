@@ -1,0 +1,35 @@
+1. Plant fat-gentoo-friendly_executable into /usr/local/bin or /usr/bin, make it executable if it is not. Hint: .tar.gz downloaded from github.com (such as https://github.com/USER/REPOSITORY/archive/master.tar.gz) is shorter and better than .zip.
+
+fat-gentoo-friendly_executable is a script that can compile/install executables/libraries for a muted libc such as bionic, musl or uclib by tricking Portage package manager to think it is compiling natively.
+
+2. All recipes require root privileges.
+
+3. Instruction below assumes that your make.conf is in /etc/portage/. The file could however be in other directory like /etc/.
+
+4. Android recipes do not support Portage sandboxing. Before compiling something for Android, edit your FEATURES setting in /etc/portage/make.conf:
+
+FEATURES='... -sandbox -usersandbox ...'
+
+If there is no FEATURES= line in make.conf, add separate line 
+
+FEATURES='-sandbox -usersandbox'
+
+5. Permit any kind of CHOST you might need. Your ACCEPT_CHOSTS setting in make.conf should be something like
+
+ACCEPT_CHOSTS="arm.* $CHOST x86.*bionic i386* i686*"
+
+6. Restore sandboxing when done compiling code for your phone or tablet. ACCEPT_CHOSTS setting above is probably harmless and can be left that way.
+
+7. If you need to run or compile code for Android running on 64- or 32-bit Intel Atom, install my bionic toolchain using ebuild scripts found at https://github.com/krisk0/pc-linux-android/. You may try to use other toolchain. Note however that with pc-linux-android you will be able to run Android code (executables taken from your phone or compiled by you). That's because your desktop Linux will have dynamic executable interpreter and libraries in /system: /system/bin/linker  /system/bin/linker64 /system/lib32/crtend_android.o ...
+
+8. If you plan to run or compile code for a device running 64-bit musl library, install my musl toolchain via ebuild scripts found at https://github.com/krisk0/alien-libc/. The repository has uclibc toolchain, too. Like bionic kit mentioned above, musl and uclibc kit has everything necessary to just run dynamic executables compiled for musl or uclib rather than glibc or bionic. For instance, musl interpreter and library is in /lib/ld-musl-x86_64.so.1 .
+
+Note that my musl and uclibc toolchain only supports 64-bit code while my bionic and your glibc toolchain can compile both 64- and 32-bit code.
+
+9. Recipes found in this repository brutally destroy all files in portage temp dir. Therefore no emerge or ebuild process can run in parallel.
+
+Some recipes may temporarily change your portage profile link /etc/make.profile. The profile is restored after ebuild sub-process terminates. Which means you should either not kill ebuild process invoked by fat-gentoo-friendly_executable, or restore the link yourself.
+
+fat-gentoo-friendly_executable might modify the link and delete/create files in portage tmp directory. Other than that, it does no modifications to your file system.
+
+10. If you encounter a problem which I should be aware of, file bug report at github.com in one of my repositories.

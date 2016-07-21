@@ -1,0 +1,7 @@
+1. Read ../common/recipe.txt and do what it says.
+
+2. Run ./p7zip-compile .
+
+On success, $PORTAGE_TMPDIR/portage/app-arch/p7zip-9.38.1-r3/image/usr/lib should contain 7-zip library and executables, where PORTAGE_TMPDIR is a setting in your make.conf which defaults to /var/tmp .
+
+3. Test executables locally, then install them onto your tablet. The easiest installation is pushing 7za executable as /system/bin/7z .
