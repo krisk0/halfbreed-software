@@ -17,4 +17,4 @@ Prerequisites
 
 Directory structure
 ^^^^^^^^^^^^^^^^^^^
-The repository is organized in the following manner. ``common`` subdirectory contains generally useful files; other directories contain recipes to build a specific software under specific conditions. For instance, ``p7zip`` folder contains working script and detailed instrucion on how to build 7-zip command-line executable for 64-bit Intel/Android on a 64-bit Intel/Linux.
+The repository is organized in the following manner. ``common`` subdirectory contains generally useful files; other directories contain recipes to build a specific software under specific conditions. For instance, ``p7zip`` folder contains working script and detailed instruction on how to build 7-zip command-line executable for 64-bit Intel/Android on a 64-bit Intel/Linux.
