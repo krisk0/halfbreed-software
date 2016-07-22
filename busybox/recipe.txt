@@ -1,6 +1,8 @@
 Recipe for 32-bit busybox executable compiled via glibc-targeting gcc
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+//Unlike other recipes, this recipe needs no bionic toolchain.
+
 1. If you want a different version than 1.24.2 (or if your portage tree has no /busybox-1.24.2.ebuild), fix ebuild name in line 22 of ./busybox-compile
 
 2. Create directory /usr/x86_64-linux-android/bin if it does not exist.
