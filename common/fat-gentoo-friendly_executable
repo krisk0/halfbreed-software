@@ -56,11 +56,13 @@ i=`find . -type d -name image|head -1`
 [ -z $i ] && { echo 'no image/'; exit 1; }
 cd $i || die "failed to chdir to $i"
 (
- cd usr || die 'no usr/ in image'
- for x in pkgconfig share lib32; do
-  y=$(find . -type d -name $x 2>/dev/null)
-  [ -z $y ] || { echo removing $y ; rm -r $y; }
- done
+ cd usr && 
+  (
+   for x in pkgconfig share lib32; do
+    y=$(find . -type d -name $x 2>/dev/null)
+    [ -z $y ] || { echo removing $y ; rm -r $y; }
+   done
+  )
 )
 
 [ -z "$RUN_COMMAND" ] ||
@@ -90,11 +92,16 @@ install_file()
   d=$EPREFIX/usr/x86_64-linux-$REALM/$(dirname $1)
   mkdir -p $d || die "install_file(): mkdir $d failed"
   cp $1 $d/ || die "install_file():cp $1 $d/ failed"
+  r=$(echo $d/`basename $1`|xargs realpath)
+  [ -z "$r" ] && die 'ups, realpath gave empty result'
+  echo "saved file $r"
  }
 
+[ -z "$INSTALL_ONLY" ] && exit 0
 # is that full path?
 [ "${INSTALL_ONLY/\//}" != "$INSTALL_ONLY" ] &&
  {
+  echo "INSTALL_ONLY is full path, cwd=`pwd`"
   for x in $(find . -wholename "$INSTALL_ONLY") ; do
    [ -d $x ] && install_directory $x
    [ -f $x ] && install_file $x
@@ -103,6 +110,7 @@ install_file()
  }
 
 for x in $(find . -name "$INSTALL_ONLY") ; do
+ echo "INSTALL_ONLY is just filename,  cwd=`pwd`"
  [ -d $x ] && install_directory $x
  [ -f $x ] && install_file $x
 done

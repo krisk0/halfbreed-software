@@ -1,0 +1,21 @@
+Recipe for 32-bit busybox executable compiled via glibc-targeting gcc
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+1. If you want a different version than 1.24.2 (or if your portage tree has no /busybox-1.24.2.ebuild), fix ebuild name in line 22 of ./busybox-compile
+
+2. Create directory /usr/x86_64-linux-android/bin if it does not exist.
+
+3. Run busybox-compile 
+
+4. If phase 1 fails, upgrade glibc via 'emerge -q sys-libs/glibc' and goto 3.
+
+5. On success /usr/x86_64-linux-android/bin/busybox should be created.
+
+   Copy it into /system/bin/ of your Intel Atom Android device, make it owned 
+    by root:root, chmod 555. Use different ownership or rights if you have reason.
+   
+   Create symbolic links for your favorite utilities:
+    cd /system/bin
+    for x in bzip2 cut diff egrep fgrep find lzma sort tar tee uname which xargs ; do
+     ln -s busybox $x
+    done

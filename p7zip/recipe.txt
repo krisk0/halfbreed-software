@@ -1,7 +1,32 @@
-1. Read ../common/recipe.txt and do what it says.
+Recipe for 64-bit 7-zip executable compiled via bionic-targeting gcc-5.3.0
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-2. Run ./p7zip-compile .
+1. Read ../common/recipe.txt and do what it says, especially paragraph 7. Yes, 
+    you need to install my bionic toolchain including gcc-5.3.0 compiler and 
+    fake pthread library. No, other toolchains won't work, if they have no 
+    suitable pthread.so.
 
-On success, $PORTAGE_TMPDIR/portage/app-arch/p7zip-9.38.1-r3/image/usr/lib should contain 7-zip library and executables, where PORTAGE_TMPDIR is a setting in your make.conf which defaults to /var/tmp .
+2. Run ./p7zip-compile
 
-3. Test executables locally, then install them onto your tablet. The easiest installation is pushing 7za executable as /system/bin/7z .
+   On success, $PORTAGE_TMPDIR/portage/app-arch/p7zip-9.38.1-r3/image/usr/lib 
+    should contain 7-zip library and executables, where PORTAGE_TMPDIR is a 
+    setting in your make.conf which defaults to /var/tmp .
+
+3. Test executables locally, then install them onto your tablet (if it can run
+    64-bit code). The easiest installation is pushing 7za executable as 
+    /system/bin/7z .
+    
+   The executable should complain about missing libraries. You should copy 
+    them, too.
+   
+   If you don't want to modify /system, copy 7z/ and 
+    /usr/x86_64-linux-android/lib64/ to /data/local/7z.temp directory on your 
+    64-bit Android device. To check if the compressor works, change to 
+    /data/local/7z.temp and issue command
+    
+    LD_LIBRARY_PATH=. ./7za a 7z-works.7z lib*
+    
+   This command should compress some files into 7z-works.7z
+
+// 32 bit 7-zip compiles fine but does not work. Bug-report localizing error is
+//  welcome

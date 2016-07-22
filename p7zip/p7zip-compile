@@ -1,11 +1,23 @@
 #!/bin/sh
 
-export CFLAGS='-m32 -O3 -march=pentium4 -msse2 -msse4.1 -msse4.2 -maes'
+# 32 bit code compiles but does not work, for unknown reason
+
+#export CFLAGS='-m32 -O3 -march=pentium4 -msse2 -msse4.1 -msse4.2 -maes'
+#export CFLAGS='-m32 -O3'
+#export CXXFLAGS="$CFLAGS"
+#export CHOST=i386-pc-linux-gnu
+
+export CFLAGS='-O3 -march=k8'
+
+# try adding -msse2 -msse4.1 -msse4.2 -maes to CFLAGS if you feel like 
+#  optimizing
+
 export CXXFLAGS="$CFLAGS"
-export CHOST=i386-pc-linux-gnu
 export CC=/usr/x86_64-linux-android/bin/x86_64-linux-android-gcc
 export CXX=/usr/x86_64-linux-android/bin/x86_64-linux-android-g++
 
 RUN_COMMAND=ls \
  fat-gentoo-friendly_executable \
- /usr/portage/app-arch/p7zip/p7zip-9.38.1-r3.ebuild android
+ /usr/portage/app-arch/p7zip/p7zip-15.09-r2.ebuild android
+
+# /usr/portage/app-arch/p7zip/p7zip-9.38.1-r3.ebuild android
