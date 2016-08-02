@@ -30,6 +30,6 @@ Note that my musl and uclibc toolchain only supports 64-bit code while my bionic
 
 Some recipes may temporarily change your portage profile link /etc/make.profile. The profile is restored after ebuild sub-process terminates. Which means you should either not kill ebuild process invoked by fat-gentoo-friendly_executable, or restore the link yourself.
 
-fat-gentoo-friendly_executable might modify the link and delete/create files in portage tmp directory. Other than that, it does no modifications to your file system.
+fat-gentoo-friendly_executable might modify the link and delete/create files in portage tmp directory. If $RUN_COMMAND environment variable is set, then the script will run the command. Other than that, it does no modifications to your file system.
 
 10. If you encounter a problem which I should be aware of, file bug report at github.com in one of my repositories.
