@@ -58,7 +58,7 @@ cd $i || die "failed to chdir to $i"
 (
  cd usr && 
   (
-   for x in pkgconfig share lib32; do
+   for x in pkgconfig share; do
     y=$(find . -type d -name $x 2>/dev/null)
     [ -z $y ] || { echo removing $y ; rm -r $y; }
    done
@@ -97,7 +97,6 @@ install_file()
   echo "saved file $r"
  }
 
-[ -z "$INSTALL_ONLY" ] && exit 0
 # is that full path?
 [ "${INSTALL_ONLY/\//}" != "$INSTALL_ONLY" ] &&
  {
