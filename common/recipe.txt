@@ -16,7 +16,7 @@ FEATURES='-sandbox -usersandbox'
 
 5. Permit any kind of CHOST you might need. Your ACCEPT_CHOSTS setting in make.conf should be something like
 
-ACCEPT_CHOSTS="arm.* $CHOST x86.*bionic i386* i686*"
+ACCEPT_CHOSTS="arm.* x86_64.* i386.* i686.*"
 
 6. Restore sandboxing when done compiling code for your phone or tablet. ACCEPT_CHOSTS setting above is probably harmless and can be left that way.
 
