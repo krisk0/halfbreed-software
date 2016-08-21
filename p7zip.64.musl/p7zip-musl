@@ -1,0 +1,31 @@
+#!/bin/bash -e
+
+e=p7zip-15.14.1.ebuild
+S=/usr/portage/app-arch/p7zip/
+
+#export CFLAGS='-m32 -O3 -march=pentium4 -msse2 -msse4.1 -msse4.2 -maes'
+#export CFLAGS='-m32 -O3'
+#export CHOST=i386-pc-linux-gnu
+
+export CFLAGS='-O3 -march=native'
+
+# try adding -msse2 -msse4.1 -msse4.2 -maes to CFLAGS if you feel like 
+#  optimizing
+
+export CXXFLAGS="$CFLAGS"
+export CC=/usr/x86_64-linux-musl/bin/x86_64-linux-musl-gcc
+export CXX=/usr/x86_64-linux-musl/bin/x86_64-linux-musl-g++
+
+[ -f ${S}$e ] || { echo "source .ebuild not found"; exit 1; }
+D=`equery w alien-libc/gcc-musl`
+D=${D%%alien-libc/*}app-arch/p7zip/
+mkdir -p $D
+a="sed -e '/FileIO.h/a #include <sys/stat.h>' -i CPP/Windows/FileDir.h || die"
+sed -e \
+ "/darwin.patch/a $a" \
+ < ${S}$e > ${D}$e
+cp -r ${S}files/* ${D}files
+
+RUN_COMMAND=ls \
+ fat-gentoo-friendly_executable \
+ ${D}$e musl
