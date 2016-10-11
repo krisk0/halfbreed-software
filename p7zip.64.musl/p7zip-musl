@@ -24,6 +24,7 @@ a="sed -e '/FileIO.h/a #include <sys/stat.h>' -i CPP/Windows/FileDir.h || die"
 sed -e \
  "/darwin.patch/a $a" \
  < ${S}$e > ${D}$e
+mkdir -p ${D}files
 cp -r ${S}files/* ${D}files
 
 RUN_COMMAND=ls \
